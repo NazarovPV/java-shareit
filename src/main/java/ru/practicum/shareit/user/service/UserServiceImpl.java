@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     public User updateUser(long userId, UserDto userDto) {
         User user = userStorage.findById(userId).orElse(null);
         if (user != null) {
-            if (isEmailExist(userDto.getEmail()) & !Objects.equals(user.getEmail(), userDto.getEmail())) {
+            if (isEmailExist(userDto.getEmail()) && !Objects.equals(user.getEmail(), userDto.getEmail())) {
                 throw new ConflictException("Такой email уже существует");
             }
         }
