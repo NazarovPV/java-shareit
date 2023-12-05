@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintViolationException;
 
-@RestControllerAdvice
+@RestControllerAdvice("ru.practicum.shareit")
 public class ErrorHandler {
     private static final Logger logger = LoggerFactory.getLogger(ErrorHandler.class);
 

@@ -1,6 +1,3 @@
---drop type if exists status;
---create type status as enum ('waiting', 'approved', 'rejected', 'canceled');
-
 DROP TABLE IF EXISTS USERS, REQUESTS, ITEMS, BOOKINGS, COMMENTS;
 
 create table if not exists USERS
@@ -30,7 +27,7 @@ create table if not exists ITEMS
     DESCRIPTION  CHARACTER VARYING(255) not null,
     NAME         CHARACTER VARYING(255) not null,
     OWNER_ID     BIGINT                 not null,
-    REQUEST_ID   BIGINT                 not null,
+    REQUEST_ID   BIGINT,
     constraint ITEMS_REQUESTS_ID_FK
         foreign key (REQUEST_ID) references REQUESTS,
     constraint ITEMS_USERS_ID_FK
