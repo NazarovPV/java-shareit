@@ -16,6 +16,8 @@ public class BookingMapper {
         return BookingDtoWithBookerId.builder()
                 .id(booking.getId())
                 .bookerId(booking.getBooker().getId())
+                .start(booking.getStart())
+                .end(booking.getEnd())
                 .build();
     }
 }

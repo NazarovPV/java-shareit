@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Transient;
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,4 +15,10 @@ import lombok.NoArgsConstructor;
 public class BookingDtoWithBookerId {
     private Long id;
     private Long bookerId;
+
+    @Transient
+    private LocalDateTime start;
+
+    @Transient
+    private LocalDateTime end;
 }

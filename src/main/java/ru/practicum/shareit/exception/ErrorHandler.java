@@ -49,7 +49,8 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST) public ErrorResponse UnsupportedStatusExceptionHandler(final UnsupportedStatusException e){
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse UnsupportedStatusExceptionHandler(final UnsupportedStatusException e) {
         logger.error(e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }

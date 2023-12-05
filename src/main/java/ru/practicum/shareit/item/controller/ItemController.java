@@ -31,11 +31,13 @@ public class ItemController {
     public ItemDtoWithTime getItemById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
         return itemService.getItemById(userId, itemId);
     }
+
     @PostMapping
     @Validated({Create.class})
     public Item saveNewItem(@RequestHeader("X-Sharer-User-Id") long ownerId, @RequestBody @Valid ItemDto itemDto) {
         return itemService.createItem(ownerId, itemDto);
     }
+
     @PostMapping("/{itemId}/comment")
     public CommentDto addNewComment(@RequestHeader("X-Sharer-User-Id") long ownerId,
                                     @PathVariable long itemId, @RequestBody CommentDto commentDto) {

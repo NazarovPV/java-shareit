@@ -69,14 +69,14 @@ public class ItemServiceImpl implements ItemService {
 
         List<ItemDtoWithTime> itemsDtoList = new ArrayList<>();
         for (var item : itemsList) {
-            List<Booking> bookings = bookingRepository.findByItemId(item.getId());
+            List<Booking> bookings = bookingRepository.findAllByItemId(item.getId());
             ItemDtoWithTime itemDtoWithTime;
             BookingDtoWithBookerId lastBookingTimeDto = null;
             BookingDtoWithBookerId nextBookingTimeDto = null;
             for (var booking : bookings) {
                 if (Objects.equals(booking.getItem().getId(), item.getId())) {
-                    List<Booking> lastBooking = bookingRepository.findByItemIdAndEndIsBefore(item.getId(), booking.getStart(), Sort.by(Sort.Direction.DESC, "start"));
-                    List<Booking> nextBooking = bookingRepository.findByItemIdAndStartIsAfter(item.getId(), booking.getEnd(), Sort.by(Sort.Direction.ASC, "end"));
+                    List<Booking> lastBooking = bookingRepository.findLastBookings(item.getId());
+                    List<Booking> nextBooking = bookingRepository.findNextBookings(item.getId());
                     if (!lastBooking.isEmpty()) {
                         lastBookingTimeDto = BookingMapper.toBookingDtoWithBookerId(lastBooking.get(0));
                     }
@@ -107,21 +107,21 @@ public class ItemServiceImpl implements ItemService {
         if (item.isEmpty()) {
             throw new NotFoundException("Предмет не найден");
         }
-        List<Booking> bookings = bookingRepository.findByItemId(item.get().getId());
+
         ItemDtoWithTime itemDtoWithTime;
-        BookingDtoWithBookerId lastBookingTimeDto = null;
-        BookingDtoWithBookerId nextBookingTimeDto = null;
+        BookingDtoWithBookerId lastBookingTimeDto;
+        BookingDtoWithBookerId nextBookingTimeDto;
         if (item.get().getOwnerId() == userId) {
-            for (var booking : bookings) {
-                List<Booking> lastBooking = bookingRepository.findByItemIdAndEndIsBefore(item.get().getId(), booking.getStart(), Sort.by(Sort.Direction.DESC, "start"));
-                List<Booking> nextBooking = bookingRepository.findByItemIdAndStartIsAfter(item.get().getId(), booking.getEnd(), Sort.by(Sort.Direction.ASC, "end"));
-                if (!lastBooking.isEmpty()) {
-                    lastBookingTimeDto = BookingMapper.toBookingDtoWithBookerId(lastBooking.get(0));
-                }
-                if (!nextBooking.isEmpty()) {
-                    nextBookingTimeDto = BookingMapper.toBookingDtoWithBookerId(nextBooking.get(0));
-                }
-            }
+
+            lastBookingTimeDto = bookingRepository.findLastBookings(item.get().getId()).stream()
+                    .findFirst()
+                    .map(BookingMapper::toBookingDtoWithBookerId)
+                    .orElse(null);
+            nextBookingTimeDto = bookingRepository.findNextBookings(item.get().getId()).stream()
+                    .findFirst()
+                    .map(BookingMapper::toBookingDtoWithBookerId)
+                    .orElse(null);
+
             itemDtoWithTime = ItemMapper.itemToItemDtoWithTime(item.get(), lastBookingTimeDto, nextBookingTimeDto);
         } else {
             itemDtoWithTime = ItemMapper.itemToItemDtoWithTime(item.get(), null, null);
@@ -180,13 +180,12 @@ public class ItemServiceImpl implements ItemService {
         CommentDto newCommentDto = null;
         if (item.isPresent() && user.isPresent()) {
             for (var booking : bookings) {
-                if (booking.getBooker().getId() == userId
-                        && booking.getItem().getId() == itemId
-                        && booking.getEnd().isBefore(now)) {
+                if (booking.getBooker().getId() == userId && booking.getItem().getId() == itemId && booking.getEnd().isBefore(now)) {
                     Comment comment = Comment.builder().text(text).authorName(user.get().getName()).itemId(itemId)
                             .created(now).build();
                     CommentMapper.toCommentDto(commentRepository.save(comment));
                     newCommentDto = CommentMapper.toCommentDto(comment);
+                    break;
                 }
             }
             if (newCommentDto == null) {

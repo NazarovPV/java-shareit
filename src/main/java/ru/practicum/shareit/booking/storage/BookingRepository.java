@@ -11,21 +11,29 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long>, BookingRepositoryCustom {
 
-    List<Booking> findByBookerIdAndEndIsBefore(Long bookerId, LocalDateTime end, Sort sort);
+    List<Booking> findAllByBookerIdAndEndIsBefore(Long bookerId, LocalDateTime end, Sort sort);
 
-    List<Booking> findByBookerIdAndStatus(Long bookerId, BookingStatus status, Sort sort);
+    List<Booking> findAllByBookerIdAndStatus(Long bookerId, BookingStatus status, Sort sort);
 
-    List<Booking> findByBookerIdAndStartIsAfter(Long bookerId, LocalDateTime start, Sort sort);
+    List<Booking> findAllByBookerIdAndStartIsAfter(Long bookerId, LocalDateTime start, Sort sort);
 
-    List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfter(Long bookerId, LocalDateTime start, LocalDateTime end, Sort sort);
+    List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfter(Long bookerId, LocalDateTime start, LocalDateTime end, Sort sort);
 
     List<Booking> findAllByBookerId(Long bookerId, Sort sort);
 
-    List<Booking> findByItemId(long itemId);
+    List<Booking> findAllByItemId(long itemId);
 
-    List<Booking> findByItemIdAndEndIsBefore(long itemId, LocalDateTime time, Sort sort);
+    @Query(value = "select b.id, b.start_date, b.end_date, b.status, b.booker_id, b.item_id " +
+            "from bookings b " +
+            "where b.item_id = :itemId and b.start_date < current_time and b.status = 'APPROVED' " +
+            "order by b.start_date DESC ", nativeQuery = true)
+    List<Booking> findLastBookings(long itemId);
 
-    List<Booking> findByItemIdAndStartIsAfter(long itemId, LocalDateTime time, Sort sort);
+    @Query(value = "select b.id, b.start_date, b.end_date, b.status, b.booker_id, b.item_id " +
+            "from bookings b " +
+            "where b.item_id = :itemId and b.start_date > current_time and b.status = 'APPROVED' " +
+            "order by b.start_date  ", nativeQuery = true)
+    List<Booking> findNextBookings(long itemId);
 
     @Query(value = "select b.id, b.end_date, b.start_date, b.status, b.booker_id, b.item_id " +
             "from bookings b " +

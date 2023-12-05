@@ -49,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
         } else {
             throw new NotFoundException("Предлагаемый к бронированию предмет не существует");
         }
-        dateValidator(bookingDto.getStart(),bookingDto.getEnd());
+        dateValidator(bookingDto.getStart(), bookingDto.getEnd());
         Booking booking = BookingMapper.dtoToBooking(bookingDto);
         booking.setItem(item.get());
         booking.setStatus(BookingStatus.WAITING);
@@ -108,19 +108,19 @@ public class BookingServiceImpl implements BookingService {
         switch (state) {
             case "WAITING":
             case "REJECTED":
-                bookingsByState = bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.valueOf(state),
+                bookingsByState = bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.valueOf(state),
                         Sort.by(Sort.Direction.DESC, "start"));
                 break;
             case "PAST":
-                bookingsByState = bookingRepository.findByBookerIdAndEndIsBefore(userId, LocalDateTime.now(),
+                bookingsByState = bookingRepository.findAllByBookerIdAndEndIsBefore(userId, LocalDateTime.now(),
                         Sort.by(Sort.Direction.DESC, "start"));
                 break;
             case "CURRENT":
-                bookingsByState = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId,
+                bookingsByState = bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(userId,
                         LocalDateTime.now(), LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "start"));
                 break;
             case "FUTURE":
-                bookingsByState = bookingRepository.findByBookerIdAndStartIsAfter(userId, LocalDateTime.now(),
+                bookingsByState = bookingRepository.findAllByBookerIdAndStartIsAfter(userId, LocalDateTime.now(),
                         Sort.by(Sort.Direction.DESC, "start"));
                 break;
             case "ALL":
@@ -156,12 +156,16 @@ public class BookingServiceImpl implements BookingService {
         return bookingsByState;
     }
 
-    private void dateValidator (LocalDateTime startTime, LocalDateTime endTime) throws ValidationException {
+    private void dateValidator(LocalDateTime startTime, LocalDateTime endTime) throws ValidationException {
         if (startTime == null) throw new ValidationException("Время начала не может быть NULL");
         if (endTime == null) throw new ValidationException("Время окончания не может быть NULL");
-        if (endTime.isBefore(startTime)) throw new ValidationException("Время окончания должно быть позже времени начала");
-        if (endTime.equals(startTime)) throw new ValidationException("Время окончания не может быть равно времени начала");
-        if (startTime.isBefore(LocalDateTime.now())) throw new ValidationException("Время начала не может быть в прошлом");
-        if (endTime.isBefore(LocalDateTime.now())) throw new ValidationException("Время окончания не может быть в прошлом");
+        if (endTime.isBefore(startTime))
+            throw new ValidationException("Время окончания должно быть позже времени начала");
+        if (endTime.equals(startTime))
+            throw new ValidationException("Время окончания не может быть равно времени начала");
+        if (startTime.isBefore(LocalDateTime.now()))
+            throw new ValidationException("Время начала не может быть в прошлом");
+        if (endTime.isBefore(LocalDateTime.now()))
+            throw new ValidationException("Время окончания не может быть в прошлом");
     }
 }
