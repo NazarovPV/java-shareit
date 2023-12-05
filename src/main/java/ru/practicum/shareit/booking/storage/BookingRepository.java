@@ -33,9 +33,3 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Booking
             "join items i on b.item_id = i.id " +
             "where i.owner_id = :ownerId ", nativeQuery = true)
     List<Booking> findByOwnerId(long ownerId);
-
-    @Query("SELECT b " +
-            "FROM Booking b " +
-            "WHERE b.id = ?1 AND (b.item.owner.id = ?2 OR b.booker.id = ?2)")
-    Optional<Booking> findFirstByBookerIdAndItemIdAndEndIsBefore(Long bookerId, Long itemId, LocalDateTime end);
-}
