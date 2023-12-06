@@ -5,6 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.booking.util.BookingMapper;
@@ -32,7 +33,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public Booking addNewBooking(long userId, BookingDto bookingDto) {
+    public BookingRequestDto addNewBooking(long userId, BookingDto bookingDto) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             throw new IllegalArgumentException("Пользователь с таким id не существует");
@@ -54,43 +55,47 @@ public class BookingServiceImpl implements BookingService {
         booking.setItem(item.get());
         booking.setStatus(BookingStatus.WAITING);
         booking.setBooker(user.get());
-
-        return bookingRepository.save(booking);
+        return BookingMapper.toBookingRequestDto(bookingRepository.save(booking));
     }
 
     @Override
     @Transactional
-    public Booking confirmRequest(long userId, long bookingId, BookingStatus status) {
+    public BookingRequestDto confirmRequest(long userId, long bookingId, Boolean status) {
+        BookingStatus bStatus;
+        if (status) {
+            bStatus = BookingStatus.APPROVED;
+        } else {
+            bStatus = BookingStatus.REJECTED;
+        }
         Optional<Booking> booking = bookingRepository.findById(bookingId);
         Optional<Item> targetItem;
-        if (booking.isPresent()) {
-            if (booking.get().getStatus().equals(BookingStatus.APPROVED)) {
-                throw new ValidationException("Бронь уже подтверждена");
-            }
-            targetItem = itemRepository.findById(booking.get().getItem().getId());
-            if (targetItem.isPresent()) {
-                if (targetItem.get().getOwnerId() == userId) {
-                    booking.get().setStatus(status);
-                    bookingRepository.save(booking.get());
-                } else {
-                    throw new NotFoundException("Неверный ownerId для изменения статуса данного предмета");
-                }
-            } else {
-                throw new NotFoundException("Указанная вещь не найдена");
-            }
-        } else {
+
+        if (booking.isEmpty()) {
             throw new NotFoundException("Указанного бронирования не найдено");
         }
-        return booking.get();
+        if (booking.get().getStatus().equals(BookingStatus.APPROVED)) {
+            throw new ValidationException("Бронь уже подтверждена");
+        }
+        targetItem = itemRepository.findById(booking.get().getItem().getId());
+        if (targetItem.isEmpty()) {
+            throw new NotFoundException("Указанная вещь не найдена");
+        }
+        if (targetItem.get().getOwnerId() == userId) {
+            booking.get().setStatus(bStatus);
+            bookingRepository.save(booking.get());
+        } else {
+            throw new NotFoundException("Неверный ownerId для изменения статуса данного предмета");
+        }
+        return BookingMapper.toBookingRequestDto(booking.get());
     }
 
     @Override
-    public Booking getInfoById(long userId, long bookingId) {
+    public BookingRequestDto getBookingById(long userId, long bookingId) {
         Optional<Booking> booking = bookingRepository.findById(bookingId);
         if (booking.isPresent()) {
             Optional<Item> item = itemRepository.findById(booking.get().getItem().getId());
             if (item.get().getOwnerId() == userId || booking.get().getBooker().getId() == userId) {
-                return booking.get();
+                return BookingMapper.toBookingRequestDto(booking.get());
             } else {
                 throw new NotFoundException("Данный заказ по указанному ownerId не найден");
             }
@@ -99,12 +104,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getByState(long userId, String state) {
+    public List<BookingRequestDto> getByState(long userId, String state) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             throw new NotFoundException("Пользователя с таким id не существует");
         }
         List<Booking> bookingsByState = new ArrayList<>();
+        List<BookingRequestDto> bookingsByStateR = new ArrayList<>();
+
         switch (state) {
             case "WAITING":
             case "REJECTED":
@@ -126,11 +133,14 @@ public class BookingServiceImpl implements BookingService {
             case "ALL":
                 bookingsByState = bookingRepository.findAllByBookerId(userId, Sort.by(Sort.Direction.DESC, "start"));
         }
-        return bookingsByState;
+        for (Booking booking : bookingsByState) {
+            bookingsByStateR.add(BookingMapper.toBookingRequestDto(booking));
+        }
+        return bookingsByStateR;
     }
 
     @Override
-    public List<Booking> getByOwner(long ownerId, String state) {
+    public List<BookingRequestDto> getByOwner(long ownerId, String state) {
         Optional<User> owner = userRepository.findById(ownerId);
         if (owner.isEmpty()) {
             throw new NotFoundException("Пользователя с таким id не существует");
@@ -153,19 +163,18 @@ public class BookingServiceImpl implements BookingService {
             case "ALL":
                 bookingsByState = bookingRepository.findAllByOwner(ownerId);
         }
-        return bookingsByState;
+        List<BookingRequestDto> bookingsByStateR = new ArrayList<>();
+        for (Booking booking : bookingsByState) {
+            bookingsByStateR.add(BookingMapper.toBookingRequestDto(booking));
+        }
+        return bookingsByStateR;
     }
 
     private void dateValidator(LocalDateTime startTime, LocalDateTime endTime) throws ValidationException {
-        if (startTime == null) throw new ValidationException("Время начала не может быть NULL");
-        if (endTime == null) throw new ValidationException("Время окончания не может быть NULL");
         if (endTime.isBefore(startTime))
             throw new ValidationException("Время окончания должно быть позже времени начала");
         if (endTime.equals(startTime))
             throw new ValidationException("Время окончания не может быть равно времени начала");
-        if (startTime.isBefore(LocalDateTime.now()))
-            throw new ValidationException("Время начала не может быть в прошлом");
-        if (endTime.isBefore(LocalDateTime.now()))
-            throw new ValidationException("Время окончания не может быть в прошлом");
+
     }
 }
