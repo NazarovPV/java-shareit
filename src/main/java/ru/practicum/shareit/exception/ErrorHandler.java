@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintViolationException;
 
-@RestControllerAdvice
+@RestControllerAdvice("ru.practicum.shareit")
 public class ErrorHandler {
     private static final Logger logger = LoggerFactory.getLogger(ErrorHandler.class);
 
@@ -44,6 +44,13 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse validationExceptionHandler(final ConstraintViolationException e) {
+        logger.error(e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse UnsupportedStatusExceptionHandler(final UnsupportedStatusException e) {
         logger.error(e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
