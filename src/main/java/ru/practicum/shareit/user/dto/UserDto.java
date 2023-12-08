@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @Builder
 public class UserDto {
+    private Long id;
     @NotBlank(groups = {Create.class})
     private String name;
     @Email(groups = {Update.class, Create.class})

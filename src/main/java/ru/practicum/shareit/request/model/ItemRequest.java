@@ -1,12 +1,11 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.request.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.request.model.ItemRequest;
+import lombok.AllArgsConstructor;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.Column;
@@ -19,43 +18,32 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "items")
-public class Item {
+@AllArgsConstructor
+@Table(name = "requests")
+public class ItemRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(name = "name")
-    private String name;
-
-    @NotBlank
     @Column(name = "description", nullable = false)
     private String description;
 
-    @NotNull
-    @Column(name = "is_available")
-    private Boolean available;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_id")
-    private ItemRequest request;
+    @JoinColumn(name = "requestor_id")
+    private User requestor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
-    private User owner;
+    @Column(name = "created")
+    private LocalDateTime created = LocalDateTime.now();
 
     @Transient
-    private List<CommentDto> comments;
+    private List<ItemDto> items;
 }
