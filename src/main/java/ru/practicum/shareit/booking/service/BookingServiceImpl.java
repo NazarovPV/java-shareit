@@ -54,7 +54,7 @@ public class BookingServiceImpl implements BookingService {
                 .status(BookingStatus.WAITING)
                 .build();
 
-        validateBookingConstraints(booking);
+        validateBookingConstraints(bookingDtoIn);
         return BookingMapper.mapToBookingDtoOut(bookingRepository.save(booking));
     }
 
@@ -170,8 +170,8 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private void validateBookingConstraints(Booking booking) {
-        Set<ConstraintViolation<Booking>> violations = Validation
+    private void validateBookingConstraints(BookingDtoIn booking) {
+        Set<ConstraintViolation<BookingDtoIn>> violations = Validation
                 .buildDefaultValidatorFactory()
                 .getValidator()
                 .validate(booking);

@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createUser(UserDto userDto) {
         User user = userMapper.mapToUser(userDto);
-        validateUserConstraints(user);
+        validateUserConstraints(userDto);
         log.info("user successfully added");
         return userRepository.save(user);
     }
@@ -77,8 +77,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private static void validateUserConstraints(User oldUser) {
-        Set<ConstraintViolation<User>> violations = Validation
+    private static void validateUserConstraints(UserDto oldUser) {
+        Set<ConstraintViolation<UserDto>> violations = Validation
                 .buildDefaultValidatorFactory()
                 .getValidator()
                 .validate(oldUser);
