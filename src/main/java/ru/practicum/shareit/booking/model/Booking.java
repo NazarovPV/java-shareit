@@ -1,26 +1,11 @@
 package ru.practicum.shareit.booking.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.AllArgsConstructor;
-import ru.practicum.shareit.user.enums.BookingStatus;
+import lombok.*;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.enums.BookingStatus;
 import ru.practicum.shareit.user.model.User;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -36,22 +21,16 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @FutureOrPresent
-    @NotNull
     @Column(name = "start_date")
     private LocalDateTime start;
 
-    @FutureOrPresent
-    @NotNull
     @Column(name = "end_date")
     private LocalDateTime end;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "booker_id")
     private User booker;
