@@ -4,52 +4,47 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.dto.Create;
-import ru.practicum.shareit.user.dto.Update;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
-@Slf4j
+@Validated
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
-@Validated
+@Slf4j
 public class UserController {
-    private final UserService userService;
 
-    @GetMapping
-    public List<User> getAllUsers() {
-        log.info("Get users");
-        return userService.getAllUsers();
-    }
-
-    @GetMapping("/{userId}")
-    public Optional<User> getUserById(@PathVariable long userId) {
-        log.info("Get user {}", userId);
-        return userService.getUserById(userId);
-    }
+    public final UserService userService;
 
     @PostMapping
-    @Validated({Create.class})
-    public User saveNewUser(@RequestBody @Valid UserDto userDto) {
+    public User createUser(@RequestBody UserDto userDto) {
         log.info("Create user");
         return userService.createUser(userDto);
     }
 
     @PatchMapping("/{userId}")
-    @Validated({Update.class})
-    public User patchUser(@PathVariable long userId, @RequestBody @Valid UserDto userDto) {
+    public User updateUser(@RequestBody UserDto userDto, @PathVariable Long userId) {
         log.info("Update user {}", userId);
-        return userService.updateUser(userId, userDto);
+        return userService.updateUser(userDto, userId);
+    }
+
+    @GetMapping("/{userId}")
+    public User getUserById(@PathVariable Long userId) {
+        log.info("Get user {}", userId);
+        return userService.getUserById(userId);
+    }
+
+    @GetMapping
+    public List<User> getUsers() {
+        log.info("Get all users");
+        return userService.getUsers();
     }
 
     @DeleteMapping("/{userId}")
-    public void removeUser(@PathVariable long userId) {
+    public void removeUser(@PathVariable Long userId) {
         log.info("Delete user {}", userId);
         userService.removeUser(userId);
     }

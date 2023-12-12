@@ -1,78 +1,94 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.ConflictException;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
-import ru.practicum.shareit.user.util.EmailValidator;
-import ru.practicum.shareit.user.util.UserMapper;
+import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.Set;
 
+@Slf4j
+@Builder
 @Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class UserServiceImpl implements UserService {
+
+    private static UserMapper userMapper;
+
     private final UserRepository userRepository;
-
-    @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public Optional<User> getUserById(long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            return user;
-        } else {
-            throw new NotFoundException("Пользователь не найден");
-        }
-    }
 
     @Override
     @Transactional
     public User createUser(UserDto userDto) {
-        if (isEmailExist(userDto.getEmail())) {
-            userRepository.save(UserMapper.toUser(userDto));
-            throw new ConflictException("Такой email уже существует");
-        }
-        if (userDto.getEmail() == null) {
-            throw new ValidationException("Не указан email");
-        }
-        if (!EmailValidator.isValid(userDto.getEmail())) {
-            throw new ValidationException("Указан неверный email");
-        }
-        return userRepository.save(UserMapper.toUser(userDto));
+        User user = userMapper.mapToUser(userDto);
+        validateUserConstraints(userDto);
+        log.info("user successfully added");
+        return userRepository.save(user);
     }
 
-    @Transactional
     @Override
-    public User updateUser(long userId, UserDto userDto) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user != null) {
-            if (isEmailExist(userDto.getEmail()) && !Objects.equals(user.getEmail(), userDto.getEmail())) {
-                throw new ConflictException("Такой email уже существует");
+    @Transactional
+    public User updateUser(UserDto userDto, Long userId) {
+        User oldUser = getUserById(userId);
+
+        if (userDto.getEmail() != null) {
+            oldUser.setEmail(userDto.getEmail());
+        }
+        if (userDto.getName() != null) {
+            oldUser.setName(userDto.getName());
+        }
+        log.info("user successfully updated");
+        return userRepository.save(oldUser);
+    }
+
+    @Override
+    @Transactional
+    public User getUserById(Long userId) {
+        validateUser(userId);
+        return userRepository.findById(userId).get();
+    }
+
+    @Override
+    @Transactional
+    public List<User> getUsers() {
+        log.info("user list has been successfully received");
+        return userRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public void removeUser(Long id) {
+        log.info("user successfully deleted");
+        userRepository.deleteById(id);
+    }
+
+    private void validateUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User with id = " + userId + " doesn't exist");
+        }
+    }
+
+    private static void validateUserConstraints(UserDto oldUser) {
+        Set<ConstraintViolation<UserDto>> violations = Validation
+                .buildDefaultValidatorFactory()
+                .getValidator()
+                .validate(oldUser);
+
+        if (!violations.isEmpty()) {
+            StringBuilder message = new StringBuilder("User data not validated: ");
+            for (ConstraintViolation<?> violation : violations) {
+                message.append(violation.getMessage()).append(";");
             }
+            throw new BadRequestException(message.toString());
         }
-        return userRepository.updateById(userId, UserMapper.toUser(userDto));
-    }
-
-    @Transactional
-    @Override
-    public void removeUser(long userId) {
-        userRepository.deleteById(userId);
-    }
-
-    private boolean isEmailExist(String email) {
-        List<User> users = userRepository.findAll();
-        return users.stream().anyMatch(e -> e.getEmail().equalsIgnoreCase(email));
     }
 }
