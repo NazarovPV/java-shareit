@@ -14,8 +14,14 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @TestPropertySource(properties = {"db.name=shareitTest"})
@@ -33,9 +39,13 @@ class UserServiceImplIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        userDtoTest1 = new UserDto(1L, "NameDto1", "testDto1@mail.ru");
+        userDtoTest1 = new UserDto();
+        userDtoTest1.setName("NameDto1");
+        userDtoTest1.setEmail("testDto1@mail.ru");
 
-        userDtoTest2 = new UserDto(2L, "NameDto2", "testDto2@mail.ru");
+        userDtoTest2 = new UserDto();
+        userDtoTest2.setName("NameDto2");
+        userDtoTest2.setEmail("testDto2@mail.ru");
 
         User userTest = new User();
         userTest.setName("Name");

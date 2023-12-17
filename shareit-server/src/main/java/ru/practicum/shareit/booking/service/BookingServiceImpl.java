@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
-import ru.practicum.shareit.user.enums.BookingState;
-import ru.practicum.shareit.user.enums.BookingStatus;
+import ru.practicum.shareit.booking.enums.BookingState;
+import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -54,7 +54,7 @@ public class BookingServiceImpl implements BookingService {
                 .status(BookingStatus.WAITING)
                 .build();
 
-        validateBookingConstraints(bookingDtoIn);
+        validateBookingConstraints(booking);
         return BookingMapper.mapToBookingDtoOut(bookingRepository.save(booking));
     }
 
@@ -170,8 +170,8 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private void validateBookingConstraints(BookingDtoIn booking) {
-        Set<ConstraintViolation<BookingDtoIn>> violations = Validation
+    private void validateBookingConstraints(Booking booking) {
+        Set<ConstraintViolation<Booking>> violations = Validation
                 .buildDefaultValidatorFactory()
                 .getValidator()
                 .validate(booking);

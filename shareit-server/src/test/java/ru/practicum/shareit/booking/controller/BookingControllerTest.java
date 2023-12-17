@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
-import ru.practicum.shareit.user.enums.BookingStatus;
+import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import java.time.LocalDateTime;
@@ -54,11 +54,11 @@ class BookingControllerTest {
 
     public ResultActions performBookingPost(BookingDtoIn bookingDtoIn, String api) throws Exception {
         return mvc.perform(MockMvcRequestBuilders
-                .post(api)
-                .content(mapper.writeValueAsString(bookingDtoIn))
-                .header("X-Sharer-User-Id", "1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON));
+                        .post(api)
+                        .content(mapper.writeValueAsString(bookingDtoIn))
+                        .header("X-Sharer-User-Id", "1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
     }
 
     public ResultActions performBookingPatch(BookingDtoIn bookingDtoIn, String api) throws Exception {
@@ -114,7 +114,7 @@ class BookingControllerTest {
 
         ResultActions resultActions = performBookingPatch(bookingDtoIn, BOOKING_API + "/1?approved=true");
 
-        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
+       resultActions.andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id",
                         is(bookingDtoIn.getId()), Long.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status",

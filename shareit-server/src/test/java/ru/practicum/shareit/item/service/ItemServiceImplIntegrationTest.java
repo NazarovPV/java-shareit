@@ -26,7 +26,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @SpringBootTest
@@ -65,9 +68,13 @@ class ItemServiceImplIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        userDtoTest1 = new UserDto(1L, "NameDto1", "testDto1@mail.ru");
+        userDtoTest1 = new UserDto();
+        userDtoTest1.setName("NameDto1");
+        userDtoTest1.setEmail("testDto1@mail.ru");
 
-        userDtoTest2 = new UserDto(2L, "NameDto2", "testDto2@mail.ru");
+        userDtoTest2 = new UserDto();
+        userDtoTest2.setName("NameDto2");
+        userDtoTest2.setEmail("testDto2@mail.ru");
 
         User userTest = new User();
         userTest.setId(1L);

@@ -108,7 +108,9 @@ class ItemServiceImplTest {
         commentTest.setAuthor(userTest);
         commentTest.setItem(itemTest);
 
-        UserDto userDtoTest1 = new UserDto(1L,"NameDto1","testDto1@mail.ru");
+        UserDto userDtoTest1 = new UserDto();
+        userDtoTest1.setName("NameDto1");
+        userDtoTest1.setEmail("testDto1@mail.ru");
     }
 
     @Test

@@ -19,7 +19,9 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @TestPropertySource(properties = {"db.name=shareitTest"})
@@ -48,13 +50,19 @@ class ItemRequestServiceImplIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        UserDto userDtoOwner = new UserDto(1L, "Name", "email@mail.ru");
+        UserDto userDtoOwner = new UserDto();
+        userDtoOwner.setName("Name");
+        userDtoOwner.setEmail("email@mail.ru");
         userOwner = userService.createUser(userDtoOwner);
 
-        UserDto userDtoBooker = new UserDto(2L, "booker", "booker@mail.ru");
+        UserDto userDtoBooker = new UserDto();
+        userDtoBooker.setName("booker");
+        userDtoBooker.setEmail("booker@mail.ru");
         userRequestor = userService.createUser(userDtoBooker);
 
-        UserDto userDtoTest = new UserDto(3L, "userTest", "test@mail.ru");
+        UserDto userDtoTest = new UserDto();
+        userDtoTest.setName("userTest");
+        userDtoTest.setEmail("test@mail.ru");
         userTest = userService.createUser(userDtoTest);
 
         ItemDto itemDtoTest = ItemDto.builder()

@@ -46,7 +46,9 @@ class UserServiceImplTest {
     @BeforeEach
     public void setUp() {
         userService = new UserServiceImpl(userRepository);
-        userDtoTest1 = new UserDto(1L, "NameDto1", "testDto1@mail.ru");
+        userDtoTest1 = new UserDto();
+        userDtoTest1.setName("NameDto1");
+        userDtoTest1.setEmail("testDto1@mail.ru");
 
         userTest = new User();
         userTest.setName("Name");

@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
-import ru.practicum.shareit.user.enums.BookingStatus;
+import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
@@ -53,10 +53,14 @@ class BookingServiceImplIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        UserDto userDtoOwner = new UserDto(1L, "Name", "email@mail.ru");
+        UserDto userDtoOwner = new UserDto();
+        userDtoOwner.setName("Name");
+        userDtoOwner.setEmail("email@mail.ru");
         userOwner = userService.createUser(userDtoOwner);
 
-        UserDto userDtoBooker = new UserDto(2L, "booker", "booker@mail.ru");
+        UserDto userDtoBooker = new UserDto();
+        userDtoBooker.setName("booker");
+        userDtoBooker.setEmail("booker@mail.ru");
         userBooker = userService.createUser(userDtoBooker);
 
 
