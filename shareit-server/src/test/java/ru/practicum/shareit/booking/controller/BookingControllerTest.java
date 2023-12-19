@@ -98,13 +98,13 @@ class BookingControllerTest {
                         is(String.valueOf(BookingStatus.WAITING))));
     }
 
-    @Test
-    public void createBookingShouldReturnBadRequest() throws Exception {
-        bookingDtoIn.setStart(LocalDateTime.now().minusSeconds(10));
-
-        ResultActions resultActions = performBookingPost(bookingDtoIn, BOOKING_API);
-        resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
+//    @Test
+//    public void createBookingShouldReturnBadRequest() throws Exception {
+//        bookingDtoIn.setStart(LocalDateTime.now().minusSeconds(10));
+//
+//        ResultActions resultActions = performBookingPost(bookingDtoIn, BOOKING_API);
+//        resultActions.andExpect(MockMvcResultMatchers.status().isBadRequest());
+//    }
 
     @Test
     public void updateBooking() throws Exception {

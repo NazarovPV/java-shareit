@@ -24,7 +24,7 @@ public class ItemRequestController {
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemRequestDto createItemRequest(@Valid @RequestBody ItemRequestDtoIn itemRequestDtoIn,
+    public ItemRequestDto createItemRequest(@RequestBody ItemRequestDtoIn itemRequestDtoIn,
                                             @RequestHeader(USER_ID_HEADER) Long userId) {
         log.info("Create item request by user{}", userId);
         return itemRequestService.createItemRequest(itemRequestDtoIn, userId);
@@ -38,8 +38,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAllByRequestsByUserId(@RequestHeader(USER_ID_HEADER) Long userId,
-                                                         @Min(0) @RequestParam(defaultValue = "0") int from,
-                                                         @Min(0) @RequestParam(defaultValue = "10") int size) {
+                                                         @RequestParam(defaultValue = "0") int from,
+                                                         @RequestParam(defaultValue = "10") int size) {
         log.info("Get all requests by user{}", userId);
         return itemRequestService.getAllByNotRequestorId(userId, from, size);
     }

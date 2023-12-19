@@ -24,7 +24,7 @@ public class ItemController {
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemDto createItem(@Valid @RequestBody ItemDto itemDto,
+    public ItemDto createItem(@RequestBody ItemDto itemDto,
                               @RequestHeader(USER_ID_HEADER) Long userId) {
         log.info("Create ItemDto");
         return itemService.createItem(itemDto, userId);
@@ -48,8 +48,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDtoBooking> getItemsByUserId(@RequestHeader(USER_ID_HEADER) Long userId,
-                                                 @Min(0) @RequestParam(defaultValue = "0") int from,
-                                                 @Min(0) @RequestParam(defaultValue = "10") int size) {
+                                                 @RequestParam(defaultValue = "0") int from,
+                                                 @RequestParam(defaultValue = "10") int size) {
         log.info("Get ItemDtos");
         return itemService.getItemsByUserId(userId, from, size);
     }
@@ -63,7 +63,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto createComment(@Valid @RequestBody Comment comment,
+    public CommentDto createComment(@RequestBody Comment comment,
                                     @PathVariable("itemId") Long itemId,
                                     @RequestHeader(USER_ID_HEADER) Long bookerId) {
         log.info("Create comment User {} item {}", bookerId, itemId);

@@ -15,6 +15,5 @@ public class ItemRequestDtoIn {
 
     private Long id;
 
-    @NotBlank
     private String description;
 }

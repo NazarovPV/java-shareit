@@ -122,14 +122,14 @@ class ItemControllerTest {
                         Long.class));
     }
 
-    @Test
-    public void createItemShouldReturnBadRequest() throws Exception {
-        itemDtoTest.setName("");
-
-        ResultActions resultActions = performItemPost(itemDtoTest, ITEM_API);
-
-        resultActions.andExpect(status().isBadRequest());
-    }
+//    @Test
+//    public void createItemShouldReturnBadRequest() throws Exception {
+//        itemDtoTest.setName("");
+//
+//        ResultActions resultActions = performItemPost(itemDtoTest, ITEM_API);
+//
+//        resultActions.andExpect(status().isBadRequest());
+//    }
 
     @Test
     public void updateItem() throws Exception {
