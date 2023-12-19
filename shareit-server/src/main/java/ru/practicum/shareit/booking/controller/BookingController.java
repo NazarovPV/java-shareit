@@ -8,9 +8,6 @@ import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.booking.service.BookingService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Validated

@@ -9,8 +9,6 @@ import ru.practicum.shareit.item.dto.ItemDtoBooking;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j
@@ -56,8 +54,8 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> getItemsByQuery(@RequestParam("text") String query,
-                                         @Min(0) @RequestParam(defaultValue = "0") int from,
-                                         @Min(0) @RequestParam(defaultValue = "10") int size) {
+                                         @RequestParam(defaultValue = "0") int from,
+                                         @RequestParam(defaultValue = "10") int size) {
         log.info("Get Items contains {}", query);
         return itemService.getItemsByQuery(query, from, size);
     }

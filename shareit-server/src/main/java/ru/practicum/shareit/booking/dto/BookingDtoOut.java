@@ -1,13 +1,9 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.booking.enums.BookingStatus;
 
 import java.time.LocalDateTime;
 
